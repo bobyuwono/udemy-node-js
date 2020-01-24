@@ -1,4 +1,4 @@
-const getNotes = require('./notes');
+const notes = require('./notes.js');
 const chalk = require('chalk');
 const yargs = require('yargs');
 
@@ -17,20 +17,28 @@ yargs.command({
         },
         body:{
             describe: "Note body",
-            demandOption: true,
+            demandOption:true,
             type: 'string'
         }
     },
     handler: function(argv){
-        console.log('Title: ' + argv.title + "\nBody: "+ argv.body);
+        notes.addNote(argv.title, argv.body);
     }
 })
 //create remove command
 yargs.command({
     command: 'remove',
     describe: 'Remove a note', 
-    handler: function(){
-    console.log('Removing the note..');
+    builder: {
+        title: {
+            describe: "note title",
+            type: "string",
+            demandOption: true,
+        }
+    },
+    handler: function(argv){
+        notes.removeNote(argv.title);
+
     }
 })
 //create list command
@@ -42,5 +50,6 @@ yargs.command({
     }
 })
 
+//ini esensial, untuk memcah argumen menjadi beberapa bagian
 yargs.parse()
 
