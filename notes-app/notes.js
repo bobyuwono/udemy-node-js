@@ -1,21 +1,16 @@
 const fs = require('fs');
 const chalk = require('chalk');
 
-const getNotes = function () {
+const getNotes =  () => {
     return "your notes is..";
 }
 
-const addNote = function (title, body) {
-    // 1. buat fungsi untuk meload note
-    // 1.b buat filter untuk menghindari dupplikat
-    // 2. buat fungsi untuk menempelkan notes baru ke file json
-    // 3. save notes
+const addNote =  (title, body) => {
     
     const notes = loadNotes();
-    const duplicateNotes = notes.filter(function (note) {
-        return note.title === title;
-    })
-    if (duplicateNotes.length === 0) {
+    const duplicateNote = notes.find( (note) =>  note.title === title)
+    
+    if (!duplicateNote) {
         notes.push({
             title: title,
             body: body
@@ -27,12 +22,12 @@ const addNote = function (title, body) {
     } 
 }
 
-const saveNotes = function (notes) {
+const saveNotes = (notes) => {
     const dataJSON = JSON.stringify(notes);
     fs.writeFileSync('notes.json', dataJSON);
 }
 
-const loadNotes = function () {
+const loadNotes =  () => {
     //cek apakah file udah ada atau belum dengan menggunakan try catch
     try {
         const databuffer = fs.readFileSync('notes.json');
@@ -43,11 +38,10 @@ const loadNotes = function () {
     }
 }
 
-const removeNote = function(title){
+const removeNote = (title) => {
     const notes = loadNotes();
-    const notesToKeep =  notes.filter(function(note){
-        return note.title !== title;
-    })
+    const notesToKeep =  notes.filter((note) =>note.title !== title); 
+
     if (notes.length === notesToKeep.length) {
         console.log(chalk.red.inverse("No Note found!"))
     } else  {
@@ -56,10 +50,32 @@ const removeNote = function(title){
     saveNotes(notesToKeep); 
 }
 
+const listNotes = () => {
+    notes = loadNotes();
+    console.log(chalk.green.inverse("Your notes"));
+
+    notes.forEach((note) => {
+        console.log(note.title);
+    } )
+}
+
+const readNote = (title) => {
+    const notes=loadNotes();
+    const duplicateNote = notes.find( (note) => note.title === title )
+
+    if (duplicateNote){
+        console.log(chalk.inverse.green(duplicateNote.title) + " : "+ duplicateNote.body);
+    } else {
+        console.log(chalk.inverse.red("notes not found"));
+    }
+
+}
 
 
 module.exports = {
     getNotes: getNotes,
     addNote: addNote,
     removeNote: removeNote,
+    listNotes: listNotes,
+    readNote: readNote,
 }
