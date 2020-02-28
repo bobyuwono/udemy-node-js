@@ -4,7 +4,9 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
-    "request": "^2.88.2"
+    "encodeurl": "^1.0.2",
+    "request": "^2.88.2",
+    "yargs": "^15.1.0"
   },
   "devDependencies": {},
   "scripts": {
