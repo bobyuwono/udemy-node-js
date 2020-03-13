@@ -1,18 +1,33 @@
 const request = require('request');
 const yargs = require('yargs');
-const weather = require('./weather.js')
+const weather = require('./weather.js') //this is my custom file
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
 
-const url = 'https://api.darksky.net/forecast/e036ceb2efed35210ee65e12cbcd84c2/-6.571120, 106.750576?units=si'
+const address = process.argv[2]
 
-request({url: url, json:true}, (error, response)=>{
-    // console.log(response.body.currently)
-    console.log(response.body.daily.data[0].summary+ "It is currently "+ response.body.currently.temperature + " degrees out. "+ 
-    "There is a "+ response.body.currently.precipIntensity + "% chance of rain") 
-})
- 
-//finding the latitude and longitude by location's name. 
-//input=[name's location], output=[latitude],[longitude]
-//**need to include method to change [space] as '%20'
+if (!address){
+    console.log('Please provide an address')
+}else {
+    geocode (address, (error,{latitude, longitude, location}) => {
+        //return    
+        if(error) return console.log(error)
+    
+        forecast(latitude,longitude, (error,forecastData) =>{
+            if(error) {
+                return console.log(error)
+            }
+    
+            console.log(location)
+            console.log('Data',forecastData)
+        })
+    })
+}
+
+/*
+fungsi untuk mengambil input lewat command line,
+contoh: "node app.js geocode --name="new York" "
+
 yargs.version('1.1.0');
 
 yargs.command({
@@ -32,3 +47,4 @@ yargs.command({
 
 yargs.parse()
     
+*/

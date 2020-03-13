@@ -1,15 +1,25 @@
 const request = require('request')
 var encodeUrl  = require('encodeurl')
 
-const getGeocode = (name) => {
+const getGeocode = (address,callback) => {
     var latitude=''
     var longitude=''
-    const urlHalfFront ='https://api.mapbox.com/geocoding/v5/mapbox.places/'
-    const urlHalfBack  ='.json?access_token=pk.eyJ1IjoiYm9ieXV3b25vIiwiYSI6ImNrNzJpbzRnbDAwNXEzaG1pd2R1OWN6ZnQifQ.KgEu-tiNmxjA4CDHINMRSQ'
-    request({url: urlHalfFront + encodeUrl(titleCase(name)) + urlHalfBack,json:true}, (error,response)=>{
-        latitude= response.body.features[0].center[0].toString()
-        longitude=response.body.features[0].center[1].toString()
-        console.log(latitude+', '+longitude)
+    const url ='https://api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURIComponent(titleCase(address)) + '.json?access_token=pk.eyJ1IjoiYm9ieXV3b25vIiwiYSI6ImNrNzJpbzRnbDAwNXEzaG1pd2R1OWN6ZnQifQ.KgEu-tiNmxjA4CDHINMRSQ'
+    request({url:url ,json:true}, (error,response)=>{
+        if (error){
+            // error if there's no connection
+            callback('unable to connect to location servies!',undefined)
+        } else if(response.body.features.length === 0){
+            // error if there's no matching location
+            callback('Unable to find location. Try another search.',undefined)
+        }else{
+            // running properly
+            callback(undefined, {
+                latitude:  response.body.features[0].center[0],
+                longitude: response.body.features[0].center[1],
+                location: response.body.features[0].place_name  
+            })
+        }        
     })
 }
 
