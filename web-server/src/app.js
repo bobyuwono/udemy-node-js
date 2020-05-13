@@ -1,21 +1,29 @@
 const path = require('path')
 const express = require('express')
 
+
+
 const app = express()
-const publicDirectoryPath = path.join(__dirname, '../public')
+const publicDirectory = path.join(__dirname, '../public')
 
-//app.use is used to customize server
-app.use(express.static(publicDirectoryPath))
+app.use(express.static(publicDirectory))
 
 
-//take two arguments: route and function: request and response 
-app.get('/weather', (req, res)=>{
-    res.send({
-        location: 'Philadephia',
-        forecast: 'rain'
-    })
+app.get('/help', (req, res) => {
+    res.send()   
+
 })
-//listen to port 3000, give a console sign to local that server si running
-app.listen(3000, ()=> {
+
+app.get('/weather', (req, res) => {
+    res.send([
+        {
+            cuaca: 'adem',
+            suhu : '27'
+        }
+    ])
+
+})
+
+app.listen(3000, () => {
     console.log('Server is up on port 3000')
 })
