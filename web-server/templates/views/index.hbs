@@ -5,16 +5,23 @@
         <title>Weather</title>
         <link rel="icon" href="/img/weather.png">
         <link rel= "stylesheet" href="/css/style.css" >
-        <script src="/js/app.js" > </script>
+        
     </head>
 
     <body>
         <div class="main-content">
             {{>header}}
-            <p>Creted by {{name}} </p>
+            <p>Created by {{name}} </p>
+            <h1>Use this site to get weather!</h1>
+
+            <form>
+                <input placeholder="Location" type='text' name= "username"> 
+                <input type="submit" value="search" >
+            </form>
             
         </div>
 
         {{>footer}}
+        <script src="/js/app.js" > </script>
     </body>
 </html>
