@@ -1,10 +1,14 @@
 
 const add = (a,b, callback) => {
     setTimeout(() => {
-        callback(a+b)        
+        callback( undefined,  a+b)        
     }, 2000);
 }
 
-add ( 1, 4, (sum) => {
+add ( 1, 4, (sum, error) => {
+    if (error){
+        return console.log('gagal euy')
+    }
+
     console.log(sum)
 } )
