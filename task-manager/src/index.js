@@ -37,14 +37,14 @@ app.get('/users', function (req,res) {
 })
 
 //function untuk get Users by Id
-app.get('/users/:id', (req,res)=> {
-    
-    const _id = req.params.id
-    User.findById(_id).then((users) =>{ 
+app.get('/users/:id', function(req,res){
+    var id = req.params.id
+    User.findById(id).then((users) =>{
         res.send(users)
-    } ).catch((e) => {
-        // res.status(500).send(e)
+    } ).catch((e)=>{
+        res.status(500).send(e)
     })
+
 })
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
