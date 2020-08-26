@@ -10,8 +10,7 @@ const taskScheme = new mongoose.Schema({
             if (validator.isEmpty(value)) {
                 throw new Error('Please fill the description')
             }
-        }
-        
+        } 
     },
     completed: {
         type: Boolean,

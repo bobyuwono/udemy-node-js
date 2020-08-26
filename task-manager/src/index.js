@@ -7,44 +7,84 @@ const port = process.env.PORT || 3000
 
 app.use(express.json())
 
-app.post('/users', (req,res) => {
+app.post('/users', async function (req,res) {
     const user = new User(req.body)
-
-    user.save().then( ()=>{
+    try{
+        await user.save()
         res.status(201).send(user)
-    }).catch((e) =>{
-        res.status(400)
-        res.send(e)
-    })
-})
-
-app.post('/task', (req,res) => {
-    const task = new Task(req.body)
-
-    task.save().then( ()=>{
-        res.status(201).send(task)
-    }).catch((e) =>{
+    }catch(e){
         res.status(400).send(e)
-    } )
+    }
 })
+
 
 // function untuk get semua user
-app.get('/users', function (req,res) {
-    User.find({}).then((users) => {
+app.get('/users', async function (req,res) {
+    
+    try{
+        const users = await User.find({})
         res.send(users)
-    } ).catch(e => {} )
+    }catch(e){
+        res.status(500).send(e)
+    }
 
 })
 
 //function untuk get Users by Id
-app.get('/users/:id', function(req,res){
-    var id = req.params.id
-    User.findById(id).then((users) =>{
-        res.send(users)
-    } ).catch((e)=>{
-        res.status(500).send(e)
-    })
+app.get('/users/:id', async function(req,res){
+    var _id = req.params.id
+    
+    try{
+        const user = await User.findById(_id)
+        res.send(user)
+    }catch(e) {
+        res.status(500).send()
+    }
 
 })
 
+app.post('/tasks', async function (req,res) {
+    var task = new Task(req.body)
+    try{
+        await task.save()
+        res.status(201).send(task)
+    }catch(e){
+        res.status(400).send(e)
+    }
+    // task.save().then( ()=>{
+    //     res.status(201).send(task)
+    // }).catch((e) =>{
+    //     res.status(400).send(e)
+    // } )
+})
+
+//mendapatkan Task by ID
+app.get('/tasks/:id' ,async function (req,res) {
+    const _id = req.params.id
+    try{
+        const task = await Task.findById(_id)
+        res.send(task)
+    }catch(e){
+        res.status(500).send
+    }
+    // id = req.params.id
+    // Task.findById(id).then((task)=>{
+    //     res.send(task)
+    // }).catch((e)=>{
+    //     res.status(500).send(e)
+    // })
+})
+
+//menampilkan seluruh Task
+app.get('/tasks', async function(req,res){
+    try{
+        tasks = await Task.find({})
+        res.send(tasks)
+    }catch(e){
+        res.status(500).send()
+    }
+})
+
+
+app.patch('/tasks')
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
