@@ -1,4 +1,5 @@
 const express = require('express')
+const auth = require('./middleware/auth');
 require('./db/mongoose')
 
 const userRouter = require('./routers/user');
