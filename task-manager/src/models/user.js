@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        unique:true,
+        unique: true,
         required: true,
         trim: true,
         lowercase: true,
@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true, 
+        required: true,
         minlength: 7,
         trim: true,
         validate(value) {
@@ -51,15 +51,23 @@ const userSchema = new mongoose.Schema({
     }]
 })
 
+userSchema.virtual('tasks_list', {
+    ref:'Task',
+    localField:'_id',
+    foreignField:'owner'
+})
+
+
 userSchema.methods.generateAuthToken = async function() {
     //1. generate new token
     //2. store in database,
     //3. return from function
-    const user = this 
-    const token = await jwt.sign({id: user._id.toString()}, 'hshshs', {expiresIn: '1h'});
-    user.tokens = user.tokens.concat({token});
-    await user.save();
-    return token;
+    const user = this
+    const token = jwt.sign({ _id: user._id.toString() }, 'hshshs')
+    user.tokens = user.tokens.concat({ token })
+    await user.save()
+
+    return token
 }
 
 userSchema.statics.findByCredentials = async function (email,password) {
@@ -77,6 +85,8 @@ userSchema.statics.findByCredentials = async function (email,password) {
     //if it's a match
     return user;
 }
+
+
 
 //hiding private data
 userSchema.methods.toJSON = function (){

@@ -1,42 +1,39 @@
 const express = require('express');
 const { update } = require('../models/task');
+const auth = require('../middleware/auth');
 const Task = require('../models/task');
 const router = new express.Router()
 
-router.post('/tasks', async function (req, res) {
-    var task = new Task(req.body)
+router.post('/tasks', auth, async function (req, res) {
+    var task = new Task({
+        ...req.body,
+        owner: req.user._id
+    })
     try {
         await task.save()
         res.status(201).send(task)
     } catch (e) {
         res.status(400).send(e)
     }
-    // task.save().then( ()=>{
-    //     res.status(201).send(task)
-    // }).catch((e) =>{
-    //     res.status(400).send(e)
-    // } )
 })
 
 //mendapatkan Task by ID
-router.get('/tasks/:id', async function (req, res) {
+router.get('/tasks/:id',auth, async function (req, res) {
     var _id = req.params.id
     try {
-        const task = await Task.findById(_id)
+        const task = await Task.findOne({_id}).populate('owner','-_id name age')
+        if(!task){
+            return res.status(404).send()
+        }
         res.send(task)
     } catch (e) {
         res.status(500).send
     }
-    // id = req.params.id
-    // Task.findById(id).then((task)=>{
-    //     res.send(task)
-    // }).catch((e)=>{
-    //     res.status(500).send(e)
-    // })
+
 })
 
-//menampilkan seluruh Task
-router.get('/tasks', async function (req, res) {
+//menampilkan seluruh task milik seorang user
+router.get('/tasks/me', auth, async function (req, res) {
     try {
         tasks = await Task.find({})
         res.send(tasks)

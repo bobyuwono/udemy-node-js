@@ -3,25 +3,33 @@ const auth = require('../middleware/auth');
 const User = require('../models/user');
 const router = new express.Router();
 
-router.post('/users', async function (req, res) {
+router.post('/users', async (req, res) => {
     const user = new User(req.body)
+
     try {
         await user.save()
-        const token = await user.generateAuthToken();
+        const token = await user.generateAuthToken()
         res.status(201).send({ user, token })
     } catch (e) {
         res.status(400).send(e)
     }
 })
 
+//mencooba mencari semuat ask yang dimiliki oleh seseorang
+router.get('/users/task', async(req,res) => {
+    const user = await User.findById('601c3c406873222c84beef9f')
+    await user.populate('tasks_list').execPopulate()
+    res.send(user.tasks_list)
+})
+
 //login using custom scheme method
-router.post('/users/login', async (req, res) => {
+router.post('/users/login', auth, async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
         const token = await user.generateAuthToken();
         res.send({ user, token })
     } catch (e) {
-        res.status(400).send(e);
+        res.send(e);
     }
 })
 
@@ -54,11 +62,12 @@ router.post('/users/logoutAll', auth, async (req, res) => {
 
 //get user itself data
 router.get('/users/me', auth, async function (req, res) {
+    console.log('users me beraksi')
     res.send(req.user);
 })
 
 
-router.patch('/users/:id', async function (req, res) {
+router.patch('/users/me', auth, async function (req, res) {
     try {
         const updates = Object.keys(req.body)
         const allowedUpdates = ['age', 'name', 'email', 'password']
@@ -67,15 +76,10 @@ router.patch('/users/:id', async function (req, res) {
         if (!isValidOperation) {
             return res.status(404).send({ error: 'Updates invalid' })
         }
-        const user = await User.findById(req.params.id)
-        updates.forEach((update) => user[update] = req.body[update])
-        await user.save()
 
-        if (!user) {
-            res.status(404).send()
-        } else {
-            res.send(user)
-        }
+        updates.forEach((update) => req.user[update] = req.body[update])
+        await req.user.save()
+        res.send(req.user)
     } catch (e) {
         res.status(500).send({ error: 'No updates' })
     }
